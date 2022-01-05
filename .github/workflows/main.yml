@@ -20,19 +20,19 @@ jobs:
       - name: variable preparation
         id: prep
         run: |
-          if ['${{ matrix.sharing }}' == 'shared']
+          if [[ "${{ matrix.sharing }}" == "shared" ]]
           then
               echo "::set-output name=sharingflag::--build-ffmpeg-static=n --build-ffmpeg-shared=y"
           else
               echo "::set-output name=sharingflag::--build-ffmpeg-static=y --build-ffmpeg-shared=n"
           fi
-          if ['${{ matrix.freedom }}' == 'nonfree']
+          if [[ "${{ matrix.freedom }}" == "nonfree" ]]
           then
               echo "::set-output name=freeflag::--disable-nonfree=n"
           else
               echo "::set-output name=freeflag::--disable-nonfree=y"
           fi
-          if ['${{ matrix.stability }}' == 'stable']
+          if [[ "${{ matrix.stability }}" == "stable" ]]
           then
               echo "::set-output name=stableflag::--prefer-stable=y"
           else
@@ -74,5 +74,6 @@ jobs:
       - run: ./cross_compile_ffmpeg.sh ${{ steps.prep.outputs.sharingflag }} ${{ steps.prep.outputs.stableflag }} ${{ steps.prep.outputs.freeflag }} --sandbox-ok=y --compiler-flavors=${{ matrix.flavor }} --build-x264-with-libav=y --gcc-cpu-count=$(nproc)
       - uses: actions/upload-artifact@v2
         with:
-          name: win-${{ matrix.flavor }}-${{ matrix.sharing }}-${{ matrix.freedom }}-${{ matrix.stability }}
-          path: sandbox/${{ matrix.flavor }}/ffmpeg_git
+          name: ffmpeg-${{ matrix.flavor }}-${{ matrix.sharing }}-${{ matrix.freedom }}-${{ matrix.stability }}
+          path: sandbox/${{ matrix.flavor }}/ffmpeg_git_master/
+
