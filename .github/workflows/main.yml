@@ -77,4 +77,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: win-${{ matrix.flavor }}-${{ steps.prep.outputs.sharing }}-${{ steps.prep.outputs.nonfree }}-${{ steps.prep.outputs.stable }}
-          path: sandbox
+          path: sandbox/${{ matrix.flavor }}/ffmpeg_git
