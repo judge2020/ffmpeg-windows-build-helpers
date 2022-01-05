@@ -13,32 +13,30 @@ jobs:
       fail-fast: false
       matrix:
         flavor: [win32, win64]
-        shared: [y, n]
-        nonfree: [y, n]
-        stable: [y, n]
+        sharing: [shared, static]
+        freedom: [nonfree, freeonly]
+        stability: [stable, unstable]
     steps:
       - name: variable preparation
         id: prep
         run: |
-          if ['${{ matrix.shared }}' == 'y']
+          if ['${{ matrix.sharing }}' == 'shared']
           then
-              echo "::set-output name=sharing::static"
-              echo "::set-output name=sharingflag::--build-ffmpeg-static=y --build-ffmpeg-shared=n"
-          else
-              echo "::set-output name=sharing::shared"
               echo "::set-output name=sharingflag::--build-ffmpeg-static=n --build-ffmpeg-shared=y"
-          fi
-          if ['${{ matrix.nonfree }}' == 'y']
-          then
-              echo "::set-output name=nonfree::nonfree"
           else
-              echo "::set-output name=nonfree::freeonly"
+              echo "::set-output name=sharingflag::--build-ffmpeg-static=y --build-ffmpeg-shared=n"
           fi
-          if ['${{ matrix.stable }}' == 'y']
+          if ['${{ matrix.freedom }}' == 'nonfree']
           then
-              echo "::set-output name=stable::stable"
+              echo "::set-output name=freeflag::--disable-nonfree=n"
           else
-              echo "::set-output name=stable::unstable"
+              echo "::set-output name=freeflag::--disable-nonfree=y"
+          fi
+          if ['${{ matrix.stability }}' == 'stable']
+          then
+              echo "::set-output name=stableflag::--prefer-stable=y"
+          else
+              echo "::set-output name=stableflag::--prefer-stable=n"
           fi
       - uses: actions/checkout@v2
       - name: apt dependencies
@@ -73,8 +71,8 @@ jobs:
           clang \
           python3-distutils \
           python-is-python3 -y
-      - run: ./cross_compile_ffmpeg.sh ${{ steps.prep.outputs.sharingflag }} --prefer-stable=${{ matrix.stable }} --disable-nonfree=${{ matrix.nonfree }} --sandbox-ok=y --compiler-flavors=${{ matrix.flavor }} --build-x264-with-libav=y --gcc-cpu-count=2
+      - run: ./cross_compile_ffmpeg.sh ${{ steps.prep.outputs.sharingflag }} ${{ steps.prep.outputs.stableflag }} ${{ steps.prep.outputs.freeflag }} --sandbox-ok=y --compiler-flavors=${{ matrix.flavor }} --build-x264-with-libav=y --gcc-cpu-count=$(nproc)
       - uses: actions/upload-artifact@v2
         with:
-          name: win-${{ matrix.flavor }}-${{ steps.prep.outputs.sharing }}-${{ steps.prep.outputs.nonfree }}-${{ steps.prep.outputs.stable }}
+          name: win-${{ matrix.flavor }}-${{ matrix.sharing }}-${{ matrix.freedom }}-${{ matrix.stability }}
           path: sandbox/${{ matrix.flavor }}/ffmpeg_git
