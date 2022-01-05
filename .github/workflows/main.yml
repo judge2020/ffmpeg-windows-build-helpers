@@ -1,0 +1,18 @@
+name: CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 
+      - run: ./cross_compile_ffmpeg.sh --build-ffmpeg-static=y --prefer-stable=n --disable-nonfree=n --sandbox-ok=y --compiler-flavors=win64 --build-x264-with-libav=y --gcc-cpu-count=2
+      - uses: actions/upload-artifact@v2
+        with:
+          name: sandbox
+          path: sandbox
