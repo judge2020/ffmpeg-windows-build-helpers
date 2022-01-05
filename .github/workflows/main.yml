@@ -9,8 +9,38 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [win32, win64]
+        shared: [y, n]
+        nonfree: [y, n]
+        stable: [y, n]
     steps:
-      - uses: actions/checkout@v2 
+      - name: variable preparation
+        id: prep
+        run: |
+          if ['${{ matrix.shared }}' == 'y']
+          then
+              echo "::set-output name=sharing::static"
+              echo "::set-output name=sharingflag::--build-ffmpeg-static=y --build-ffmpeg-shared=n"
+          else
+              echo "::set-output name=sharing::shared"
+              echo "::set-output name=sharingflag::--build-ffmpeg-static=n --build-ffmpeg-shared=y"
+          fi
+          if ['${{ matrix.nonfree }}' == 'y']
+          then
+              echo "::set-output name=nonfree::nonfree"
+          else
+              echo "::set-output name=nonfree::freeonly"
+          fi
+          if ['${{ matrix.stable }}' == 'y']
+          then
+              echo "::set-output name=stable::stable"
+          else
+              echo "::set-output name=stable::unstable"
+          fi
+      - uses: actions/checkout@v2
       - name: apt dependencies
         run: |
           sudo apt install subversion \
@@ -43,8 +73,8 @@ jobs:
           clang \
           python3-distutils \
           python-is-python3 -y
-      - run: ./cross_compile_ffmpeg.sh --build-ffmpeg-static=y --prefer-stable=n --disable-nonfree=n --sandbox-ok=y --compiler-flavors=win64 --build-x264-with-libav=y --gcc-cpu-count=2
+      - run: ./cross_compile_ffmpeg.sh -a ${{ steps.prep.outputs.sharingflag }} --prefer-stable=${{ matrix.stable }} --disable-nonfree=${{ matrix.nonfree }} --sandbox-ok=y --compiler-flavors=${{ matrix.flavor }} --build-x264-with-libav=y --gcc-cpu-count=2
       - uses: actions/upload-artifact@v2
         with:
-          name: sandbox
+          name: win-${{ matrix.flavor }}-${{ steps.prep.outputs.sharing }}-${{ steps.prep.outputs.nonfree }}-${{ steps.prep.outputs.stable }}
           path: sandbox
