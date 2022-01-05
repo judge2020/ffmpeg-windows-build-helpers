@@ -73,7 +73,7 @@ jobs:
           clang \
           python3-distutils \
           python-is-python3 -y
-      - run: ./cross_compile_ffmpeg.sh -a ${{ steps.prep.outputs.sharingflag }} --prefer-stable=${{ matrix.stable }} --disable-nonfree=${{ matrix.nonfree }} --sandbox-ok=y --compiler-flavors=${{ matrix.flavor }} --build-x264-with-libav=y --gcc-cpu-count=2
+      - run: ./cross_compile_ffmpeg.sh ${{ steps.prep.outputs.sharingflag }} --prefer-stable=${{ matrix.stable }} --disable-nonfree=${{ matrix.nonfree }} --sandbox-ok=y --compiler-flavors=${{ matrix.flavor }} --build-x264-with-libav=y --gcc-cpu-count=2
       - uses: actions/upload-artifact@v2
         with:
           name: win-${{ matrix.flavor }}-${{ steps.prep.outputs.sharing }}-${{ steps.prep.outputs.nonfree }}-${{ steps.prep.outputs.stable }}
