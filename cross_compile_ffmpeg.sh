@@ -2462,7 +2462,7 @@ build_ffmpeg() {
 
     sed -i.bak 's/-lswresample -lm.*/-lswresample -lm -lsoxr/' "$PKG_CONFIG_PATH/libswresample.pc" # XXX patch ffmpeg
 
-    if [[ $non_free == "y" ]]; then
+    if [[ "n" == "y" ]]; then
       if [[ $build_type == "shared" ]]; then
         echo "Done! You will find $bits_target-bit $1 non-redistributable binaries in $(pwd)/bin"
       else
@@ -2473,6 +2473,11 @@ build_ffmpeg() {
       archive="$cur_dir/redist/ffmpeg-$(git describe --tags --match N)-win$bits_target-$1"
       if [[ $original_cflags =~ "pentium3" ]]; then
         archive+="_legacy"
+      fi
+      if [[ $non_free == "y" ]]; then
+        archive+="-nonfree"
+      else
+        archive+="-freeonly"
       fi
       if [[ $build_type == "shared" ]]; then
         echo "Done! You will find $bits_target-bit $1 binaries in $(pwd)/bin"

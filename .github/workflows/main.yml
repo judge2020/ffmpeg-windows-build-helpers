@@ -76,10 +76,11 @@ jobs:
         with:
           name: ffmpeg-${{ matrix.flavor }}-${{ matrix.sharing }}-${{ matrix.freedom }}-${{ matrix.stability }}
           path: |
-            sandbox/${{ matrix.flavor }}/ffmpeg_git_master/*.exe
-            sandbox/${{ matrix.flavor }}/ffmpeg_git_master_shared/bin/
-            sandbox/${{ matrix.flavor }}/ffmpeg_git_master_shared/share/
-            sandbox/${{ matrix.flavor }}/ffmpeg_git_with_fdk_aac_master/*.exe
-            sandbox/${{ matrix.flavor }}/ffmpeg_git_with_fdk_aac_master_shared/bin/
-            sandbox/${{ matrix.flavor }}/ffmpeg_git_with_fdk_aac_master_shared/share/
-            sandbox/redist/
+            sandbox/redist/ffmpeg-*
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{github.run_id}}${{github.run_attempt}}
+          body: "Note: Some releases contain non-free components. You may not download then redistribute these."
+          files: |
+            sandbox/redist/ffmpeg-*
