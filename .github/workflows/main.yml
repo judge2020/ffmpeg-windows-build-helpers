@@ -75,5 +75,11 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: ffmpeg-${{ matrix.flavor }}-${{ matrix.sharing }}-${{ matrix.freedom }}-${{ matrix.stability }}
-          path: sandbox/${{ matrix.flavor }}/ffmpeg_git_master/
-
+          path: |
+            sandbox/${{ matrix.flavor }}/ffmpeg_git_master/*.exe
+            sandbox/${{ matrix.flavor }}/ffmpeg_git_master_shared/bin/
+            sandbox/${{ matrix.flavor }}/ffmpeg_git_master_shared/share/
+            sandbox/${{ matrix.flavor }}/ffmpeg_git_with_fdk_aac_master/*.exe
+            sandbox/${{ matrix.flavor }}/ffmpeg_git_with_fdk_aac_master_shared/bin/
+            sandbox/${{ matrix.flavor }}/ffmpeg_git_with_fdk_aac_master_shared/share/
+            sandbox/redist/
