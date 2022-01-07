@@ -80,7 +80,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag: ${{github.run_id}}${{github.run_attempt}}
+          tag_name: ${{github.run_id}}${{github.run_attempt}}
           name: ${{github.run_id}}${{github.run_attempt}}
           body: "Note: Some releases contain non-free components. You may not download then redistribute these."
           files: |
